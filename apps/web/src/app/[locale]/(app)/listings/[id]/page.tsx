@@ -107,27 +107,38 @@ const ListingDetailsPage = ({ params }: Props) => {
           {t("contacts")}
         </Typography.Text>
         <div className="flex flex-col gap-2 sm:flex-row">
-          {p.contactPhones[0] && (
-            <Button
-              type="primary"
-              size="large"
-              block
-              icon={<Phone size={18} />}
-              href={`tel:${p.contactPhones[0]}`}
-            >
-              {tCommon("call")} {formatKzPhone(p.contactPhones[0])}
-            </Button>
+          {p.contactPhones.length > 0 && (
+            <div className="flex flex-1 flex-col gap-2">
+              {p.contactPhones.map((phone) => (
+                <Button
+                  key={phone}
+                  type="primary"
+                  size="large"
+                  block
+                  icon={<Phone size={18} />}
+                  href={`tel:${phone}`}
+                >
+                  {tCommon("call")} {formatKzPhone(phone)}
+                </Button>
+              ))}
+            </div>
           )}
-          {p.whatsappPhones[0] && (
-            <Button
-              size="large"
-              block
-              href={`https://wa.me/${p.whatsappPhones[0].replace(/\D/g, "")}`}
-              target="_blank"
-              style={{ background: waGreen, borderColor: waGreen, color: "#fff" }}
-            >
-              {tCommon("whatsapp")}
-            </Button>
+          {p.whatsappPhones.length > 0 && (
+            <div className="flex flex-1 flex-col gap-2">
+              {p.whatsappPhones.map((phone) => (
+                <Button
+                  key={phone}
+                  size="large"
+                  block
+                  href={`https://wa.me/${phone.replace(/\D/g, "")}`}
+                  target="_blank"
+                  style={{ background: waGreen, borderColor: waGreen, color: "#fff" }}
+                >
+                  {tCommon("whatsapp")}
+                  {p.whatsappPhones.length > 1 ? ` ${formatKzPhone(phone)}` : ""}
+                </Button>
+              ))}
+            </div>
           )}
         </div>
       </div>
