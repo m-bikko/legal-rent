@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --brand: #0f6b4e;
+  --bg-page: #f6f7f6;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Отступ контента под нижний таб-бар на мобильных (+ safe area iOS). */
+.pb-tabbar {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
