@@ -87,6 +87,8 @@
     "description": "Сипаттама",
     "address": "Мекенжай",
     "contacts": "Байланыс",
+    "callPhones": "Байланыс нөмірлері",
+    "whatsappPhones": "WhatsApp",
     "openIn2gis": "2ГИС-те ашу",
     "mapPoint": "Картадағы нүкте",
     "noPhotos": "Фото әзірге жоқ",

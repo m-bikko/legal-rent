@@ -1,8 +1,8 @@
 "use client";
 
 import { use } from "react";
-import { Button, Carousel, Image, Skeleton, Tag, Typography, Result } from "antd";
-import { Phone, ImageOff } from "lucide-react";
+import { Carousel, Image, Skeleton, Tag, Typography, Result } from "antd";
+import { Phone, MessageCircle, ImageOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatKzPhone } from "@rentlegal/core";
 import { useListing } from "@/lib/queries";
@@ -34,7 +34,7 @@ const ListingDetailsPage = ({ params }: Props) => {
   if (isError || !p) return <Result status="404" title={tCommon("loading")} />;
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4 pb-24 md:pb-0">
+    <div className="mx-auto flex max-w-2xl flex-col gap-4">
       <div className="relative overflow-hidden rounded-2xl">
         {p.photos.length > 0 ? (
           <Image.PreviewGroup>
@@ -101,46 +101,64 @@ const ListingDetailsPage = ({ params }: Props) => {
         </div>
       )}
 
-      {/* Контакты: sticky-панель на мобильных, обычный блок на десктопе */}
-      <div className="fixed inset-x-0 bottom-16 z-10 border-t border-gray-200 bg-white/95 p-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur md:static md:rounded-2xl md:border md:bg-white md:p-4">
-        <Typography.Text type="secondary" className="mb-2 hidden text-sm md:block">
+      {/* Контакты: список под описанием, разделён на звонки и WhatsApp */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-4">
+        <Typography.Text strong className="mb-3 block">
           {t("contacts")}
         </Typography.Text>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          {p.contactPhones.length > 0 && (
-            <div className="flex flex-1 flex-col gap-2">
+
+        {p.contactPhones.length > 0 && (
+          <div className="mb-3">
+            <Typography.Text type="secondary" className="mb-2 block text-sm">
+              {t("callPhones")}
+            </Typography.Text>
+            <div className="flex flex-col gap-2">
               {p.contactPhones.map((phone) => (
-                <Button
+                <a
                   key={phone}
-                  type="primary"
-                  size="large"
-                  block
-                  icon={<Phone size={18} />}
                   href={`tel:${phone}`}
+                  className="flex items-center gap-3 rounded-xl border border-gray-200 p-3 transition-colors hover:border-[#0F6B4E]"
                 >
-                  {tCommon("call")} {formatKzPhone(phone)}
-                </Button>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0F6B4E]/10 text-[#0F6B4E]">
+                    <Phone size={18} />
+                  </span>
+                  <span className="font-medium">{formatKzPhone(phone)}</span>
+                  <span className="ml-auto text-sm text-[#0F6B4E]">{tCommon("call")}</span>
+                </a>
               ))}
             </div>
-          )}
-          {p.whatsappPhones.length > 0 && (
-            <div className="flex flex-1 flex-col gap-2">
+          </div>
+        )}
+
+        {p.whatsappPhones.length > 0 && (
+          <div>
+            <Typography.Text type="secondary" className="mb-2 block text-sm">
+              {t("whatsappPhones")}
+            </Typography.Text>
+            <div className="flex flex-col gap-2">
               {p.whatsappPhones.map((phone) => (
-                <Button
+                <a
                   key={phone}
-                  size="large"
-                  block
                   href={`https://wa.me/${phone.replace(/\D/g, "")}`}
                   target="_blank"
-                  style={{ background: waGreen, borderColor: waGreen, color: "#fff" }}
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-xl border border-gray-200 p-3 transition-colors hover:border-[#25D366]"
                 >
-                  {tCommon("whatsapp")}
-                  {p.whatsappPhones.length > 1 ? ` ${formatKzPhone(phone)}` : ""}
-                </Button>
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white"
+                    style={{ background: waGreen }}
+                  >
+                    <MessageCircle size={18} />
+                  </span>
+                  <span className="font-medium">{formatKzPhone(phone)}</span>
+                  <span className="ml-auto text-sm" style={{ color: waGreen }}>
+                    {tCommon("whatsapp")}
+                  </span>
+                </a>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

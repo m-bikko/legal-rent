@@ -87,6 +87,8 @@
     "description": "Description",
     "address": "Address",
     "contacts": "Contacts",
+    "callPhones": "Contact numbers",
+    "whatsappPhones": "WhatsApp",
     "openIn2gis": "Open in 2GIS",
     "mapPoint": "Point on the map",
     "noPhotos": "No photos yet",

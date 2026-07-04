@@ -87,6 +87,8 @@
     "description": "Описание",
     "address": "Адрес",
     "contacts": "Контакты",
+    "callPhones": "Номера для связи",
+    "whatsappPhones": "WhatsApp",
     "openIn2gis": "Открыть в 2ГИС",
     "mapPoint": "Точка на карте",
     "noPhotos": "Фото пока нет",
