@@ -80,7 +80,14 @@ const OwnedPropertyPage = ({ params }: Props) => {
       ) : (
         <>
           <div className="overflow-hidden rounded-2xl">
-            <PhotoCarousel photos={p.photos} alt={p.address} heightClass="h-56" />
+            <PhotoCarousel
+              photos={p.photos}
+              alt={p.address}
+              heightClass="h-56"
+              arrows
+              autoplay
+              preview
+            />
           </div>
 
           <Card styles={{ body: { padding: 20 } }}>

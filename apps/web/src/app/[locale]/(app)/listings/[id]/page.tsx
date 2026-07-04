@@ -1,13 +1,14 @@
 "use client";
 
 import { use } from "react";
-import { Carousel, Image, Skeleton, Tag, Typography, Result } from "antd";
-import { Phone, MessageCircle, ImageOff } from "lucide-react";
+import { Skeleton, Tag, Typography, Result } from "antd";
+import { Phone, MessageCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatKzPhone } from "@rentlegal/core";
 import { useListing } from "@/lib/queries";
 import { formatPrice } from "@/lib/format";
 import { LikeButton } from "@/components/listings/like-button";
+import { PhotoCarousel } from "@/components/listings/photo-carousel";
 import { TwoGisPreview } from "@/components/listings/two-gis-preview";
 
 // Кастомная зелёная кнопка WhatsApp — фирменный цвет мессенджера
@@ -36,27 +37,14 @@ const ListingDetailsPage = ({ params }: Props) => {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
       <div className="relative overflow-hidden rounded-2xl">
-        {p.photos.length > 0 ? (
-          <Image.PreviewGroup>
-            <Carousel dots swipeToSlide draggable>
-              {p.photos.map((src) => (
-                <Image
-                  key={src}
-                  src={src}
-                  alt={p.address}
-                  width="100%"
-                  className="!h-72 w-full object-cover"
-                  rootClassName="!block"
-                />
-              ))}
-            </Carousel>
-          </Image.PreviewGroup>
-        ) : (
-          <div className="flex h-72 w-full flex-col items-center justify-center gap-2 bg-gray-100 text-gray-400">
-            <ImageOff size={36} />
-            <span className="text-sm">{t("noPhotos")}</span>
-          </div>
-        )}
+        <PhotoCarousel
+          photos={p.photos}
+          alt={p.address}
+          heightClass="h-72"
+          arrows
+          autoplay
+          preview
+        />
       </div>
 
       <div className="flex items-start justify-between gap-3">

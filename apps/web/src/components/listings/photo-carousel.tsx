@@ -1,14 +1,34 @@
 "use client";
 
-import { Carousel } from "antd";
+import { useState } from "react";
+import { Carousel, Image } from "antd";
 import { ImageOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-type Props = { photos: string[]; alt: string; heightClass?: string };
+type Props = {
+  photos: string[];
+  alt: string;
+  heightClass?: string;
+  /** Стрелки навигации по слайдам. */
+  arrows?: boolean;
+  /** Автопрокрутка каждые 3 сек; останавливается навсегда после касания пользователем. */
+  autoplay?: boolean;
+  /** Полноэкранный просмотр фото по клику. */
+  preview?: boolean;
+};
 
-/** Карусель фото карточки; заглушка, если фото нет. */
-export const PhotoCarousel = ({ photos, alt, heightClass = "h-52" }: Props) => {
+/** Карусель фото; заглушка, если фото нет. */
+export const PhotoCarousel = ({
+  photos,
+  alt,
+  heightClass = "h-52",
+  arrows = false,
+  autoplay = false,
+  preview = false,
+}: Props) => {
   const t = useTranslations("property");
+  // Любое взаимодействие (тап, свайп, стрелка) выключает автопрокрутку
+  const [touched, setTouched] = useState(false);
 
   if (photos.length === 0) {
     return (
@@ -21,19 +41,39 @@ export const PhotoCarousel = ({ photos, alt, heightClass = "h-52" }: Props) => {
     );
   }
 
-  if (photos.length === 1) {
-    return (
+  const renderPhoto = (src: string) =>
+    preview ? (
+      <Image
+        key={src}
+        src={src}
+        alt={alt}
+        width="100%"
+        className={`${heightClass} w-full object-cover`}
+        rootClassName="!block"
+      />
+    ) : (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={photos[0]} alt={alt} className={`${heightClass} w-full object-cover`} />
+      <img key={src} src={src} alt={alt} className={`${heightClass} w-full object-cover`} />
     );
-  }
 
-  return (
-    <Carousel dots swipeToSlide draggable>
-      {photos.map((src) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img key={src} src={src} alt={alt} className={`${heightClass} w-full object-cover`} />
-      ))}
-    </Carousel>
+  const single = photos.length === 1;
+
+  const body = single ? (
+    renderPhoto(photos[0]!)
+  ) : (
+    <div onPointerDown={() => setTouched(true)}>
+      <Carousel
+        dots
+        swipeToSlide
+        draggable
+        arrows={arrows}
+        autoplay={autoplay && !touched}
+        autoplaySpeed={3000}
+      >
+        {photos.map(renderPhoto)}
+      </Carousel>
+    </div>
   );
+
+  return preview ? <Image.PreviewGroup>{body}</Image.PreviewGroup> : body;
 };
