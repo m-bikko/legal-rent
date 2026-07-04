@@ -1,5 +1,6 @@
+// otp.ts использует node:crypto — экспортируется отдельным entrypoint
+// "@rentlegal/core/otp" и не должен попадать в клиентский бандл.
 export * from "./phone";
-export * from "./otp";
 export * from "./property";
 export * from "./verification";
 export * from "./cities";

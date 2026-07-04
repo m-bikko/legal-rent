@@ -4,7 +4,7 @@ import {
   hashOtp,
   OTP_RESEND_COOLDOWN_MS,
   OTP_TTL_MS,
-} from "@rentlegal/core";
+} from "@rentlegal/core/otp";
 import { supabaseAdmin } from "./db";
 import { ApiError } from "./api";
 import { otpSender } from "./otp-sender";
