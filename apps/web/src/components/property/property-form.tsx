@@ -5,11 +5,12 @@ import { Button, Form, Input, InputNumber, Segmented, Select, Upload, App } from
 import type { UploadFile } from "antd";
 import { ImagePlus, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { PropertyType, RentPeriod, type CreatePropertyBody } from "@rentlegal/core";
+import { RentPeriod, allowedPropertyTypesFor, type CreatePropertyBody } from "@rentlegal/core";
 import type { PropertyRow } from "@/lib/types";
 import { useApiErrorMessage } from "@/lib/use-api-error";
 import { PhoneInput } from "@/components/phone-input";
 import { CitySelect } from "@/components/city-select";
+import { useUser } from "@/components/shell/user-context";
 
 export type PropertyFormValues = Omit<CreatePropertyBody, "price"> & { price: number };
 
@@ -24,8 +25,12 @@ export const PropertyForm = ({ initial, submitLabel, onSubmit }: Props) => {
   const tProp = useTranslations("property");
   const errorMessage = useApiErrorMessage();
   const { message } = App.useApp();
+  const user = useUser();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Самозанятым по НК РК доступна только жилая недвижимость (ОКЭД 68201)
+  const availableTypes = allowedPropertyTypesFor(user.accountType);
 
   const submit = async (values: PropertyFormValues) => {
     setLoading(true);
@@ -65,7 +70,7 @@ export const PropertyForm = ({ initial, submitLabel, onSubmit }: Props) => {
       <Form.Item name="type" label={t("typeLabel")} rules={[{ required: true }]}>
         <Select
           size="large"
-          options={PropertyType.options.map((v) => ({
+          options={availableTypes.map((v) => ({
             value: v,
             label: tProp(`types.${v}` as "types.apartment"),
           }))}

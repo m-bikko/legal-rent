@@ -1,4 +1,4 @@
-import { CreatePropertyBody, normalizeKzPhone } from "@rentlegal/core";
+import { CreatePropertyBody, allowedPropertyTypesFor, normalizeKzPhone } from "@rentlegal/core";
 import { ApiError, handle, ok, parseBody, requireUser } from "@/server/api";
 import { mapProperty, supabaseAdmin } from "@/server/db";
 
@@ -19,6 +19,9 @@ export const POST = handle(async (req: Request) => {
   if (user.verificationStatus !== "approved") throw new ApiError("verification_required", 403);
 
   const body = await parseBody(CreatePropertyBody, req);
+  if (!allowedPropertyTypesFor(user.accountType).includes(body.type)) {
+    throw new ApiError("self_employed_residential_only", 403);
+  }
 
   const contactPhones = body.contactPhones.map(normalizeKzPhone);
   const whatsappPhones = (body.whatsappPhones ?? []).map(normalizeKzPhone);

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AccountType } from "./verification";
 
 export const PropertyType = z.enum([
   "apartment",
@@ -10,6 +11,21 @@ export const PropertyType = z.enum([
   "space",
 ]);
 export type PropertyType = z.infer<typeof PropertyType>;
+
+/**
+ * Жилая недвижимость (ОКЭД 68201). С 2026 года самозанятым в РК разрешена
+ * сдача ТОЛЬКО жилой недвижимости; коммерческая (ОКЭД 68202) требует ИП/ТОО.
+ */
+export const RESIDENTIAL_PROPERTY_TYPES: readonly PropertyType[] = [
+  "apartment",
+  "house",
+  "dacha",
+];
+
+export const allowedPropertyTypesFor = (
+  accountType: AccountType,
+): readonly PropertyType[] =>
+  accountType === "self_employed" ? RESIDENTIAL_PROPERTY_TYPES : PropertyType.options;
 
 export const RentPeriod = z.enum(["hour", "day", "month"]);
 export type RentPeriod = z.infer<typeof RentPeriod>;

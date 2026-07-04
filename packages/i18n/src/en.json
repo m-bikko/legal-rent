@@ -197,6 +197,7 @@
     "not_found": "Not found",
     "verification_required": "Verification is required to publish properties",
     "verification_pending": "Please wait until your request is reviewed",
+    "self_employed_residential_only": "Self-employed landlords can only rent out residential property (apartment, house, dacha). Commercial objects require IE/LLP status",
     "tenant_not_found": "No user with this number. The tenant must sign up on the platform",
     "cannot_rent_own": "You cannot attach your own account as a tenant",
     "agreement_exists": "This property already has an active agreement",

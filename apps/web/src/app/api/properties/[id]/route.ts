@@ -1,5 +1,6 @@
 import {
   UpdatePropertyBody,
+  allowedPropertyTypesFor,
   canTransitionStatus,
   normalizeKzPhone,
   type PropertyStatus,
@@ -70,7 +71,12 @@ export const PATCH = handle(async (req: Request, { params }: Ctx) => {
     patch.status = body.status;
   }
 
-  if (body.type) patch.type = body.type;
+  if (body.type) {
+    if (!allowedPropertyTypesFor(user.accountType).includes(body.type)) {
+      throw new ApiError("self_employed_residential_only", 403);
+    }
+    patch.type = body.type;
+  }
   if (body.address) patch.address = body.address;
   if (body.city) patch.city = body.city;
   if (body.gisUrl !== undefined) patch.gis_url = body.gisUrl || null;

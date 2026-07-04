@@ -1,4 +1,10 @@
-import { canTransitionStatus, PropertyType, RentPeriod, PropertyStatus } from "../src/property";
+import {
+  canTransitionStatus,
+  allowedPropertyTypesFor,
+  PropertyType,
+  RentPeriod,
+  PropertyStatus,
+} from "../src/property";
 
 describe("canTransitionStatus (manual transitions by owner)", () => {
   it("allows free -> archived", () => {
@@ -20,6 +26,20 @@ describe("canTransitionStatus (manual transitions by owner)", () => {
 
   it("forbids rented -> free while agreement is active (must end agreement)", () => {
     expect(canTransitionStatus("rented", "free", { hasActiveAgreement: true })).toBe(false);
+  });
+});
+
+describe("allowedPropertyTypesFor (ОКЭД-ограничение самозанятых)", () => {
+  it("self_employed can rent out residential only", () => {
+    expect(allowedPropertyTypesFor("self_employed")).toEqual(["apartment", "house", "dacha"]);
+  });
+
+  it("organization can rent out all types", () => {
+    expect(allowedPropertyTypesFor("organization")).toEqual(PropertyType.options);
+  });
+
+  it("individual (tenant) sees all types in listings context", () => {
+    expect(allowedPropertyTypesFor("individual")).toEqual(PropertyType.options);
   });
 });
 

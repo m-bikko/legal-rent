@@ -18,6 +18,7 @@ export type ErrorCode =
   | "not_found"
   | "verification_required"
   | "verification_pending"
+  | "self_employed_residential_only"
   | "tenant_not_found"
   | "cannot_rent_own"
   | "agreement_exists"
