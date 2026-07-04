@@ -19,7 +19,9 @@ export const useMe = () =>
 const listingsUrl = (filters: Partial<ListingsQuery>) => {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {
-    if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
+    if (value === undefined || value === null) continue;
+    const str = String(value);
+    if (str) params.set(key, str);
   }
   const qs = params.toString();
   return qs ? `/api/listings?${qs}` : "/api/listings";
@@ -70,6 +72,17 @@ export const useMyProperties = () =>
   useQuery({
     queryKey: ["my-properties"],
     queryFn: () => apiGet<{ items: PropertyRow[] }>("/api/properties").then((d) => d.items),
+  });
+
+export type OwnedProperty = {
+  item: PropertyRow;
+  agreement: (AgreementRow & { tenant: AppUser | null }) | null;
+};
+
+export const useOwnedProperty = (id: string) =>
+  useQuery({
+    queryKey: ["owned-property", id],
+    queryFn: () => apiGet<OwnedProperty>(`/api/properties/${id}`),
   });
 
 export const useMyAgreements = () =>

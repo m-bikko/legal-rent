@@ -6,7 +6,7 @@ import { CITY_IDS } from "./cities";
 export const UserRole = z.enum(["tenant", "landlord"]);
 export type UserRole = z.infer<typeof UserRole>;
 
-export const CityId = z.enum(CITY_IDS);
+const CityIdSchema = z.enum(CITY_IDS);
 
 const phone = z.string().min(10).max(20);
 const otpCode = z.string().regex(/^\d{6}$/);
@@ -26,7 +26,7 @@ export const RegisterBody = z
     fullName: z.string().trim().min(2).max(200).optional(),
     orgName: z.string().trim().min(2).max(200).optional(),
     iinBin: z.string().regex(/^\d{12}$/).optional(),
-    city: CityId,
+    city: CityIdSchema,
   })
   .superRefine((val, ctx) => {
     if (val.accountType === "organization") {
@@ -45,7 +45,7 @@ export const VerifyOtpBody = z.object({ phone, code: otpCode });
 export type VerifyOtpBody = z.infer<typeof VerifyOtpBody>;
 
 export const ListingsQuery = z.object({
-  city: CityId.optional(),
+  city: CityIdSchema.optional(),
   type: PropertyType.optional(),
   priceMin: z.coerce.number().nonnegative().optional(),
   priceMax: z.coerce.number().nonnegative().optional(),
@@ -56,7 +56,7 @@ export type ListingsQuery = z.infer<typeof ListingsQuery>;
 export const CreatePropertyBody = z.object({
   type: PropertyType,
   address: z.string().trim().min(3).max(300),
-  city: CityId,
+  city: CityIdSchema,
   gisUrl: z.string().url().max(500).optional().or(z.literal("")),
   price: z.number().positive(),
   rentPeriod: RentPeriod,
