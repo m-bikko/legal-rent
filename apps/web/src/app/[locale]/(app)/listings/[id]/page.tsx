@@ -57,11 +57,6 @@ const ListingDetailsPage = ({ params }: Props) => {
             <span className="text-sm">{t("noPhotos")}</span>
           </div>
         )}
-        <LikeButton
-          propertyId={p.id}
-          isLiked={Boolean(p.isLiked)}
-          className="absolute right-3 top-3 z-10"
-        />
       </div>
 
       <div className="flex items-start justify-between gap-3">
@@ -79,6 +74,11 @@ const ListingDetailsPage = ({ params }: Props) => {
             </Typography.Text>
           </div>
         </div>
+        <LikeButton
+          propertyId={p.id}
+          isLiked={Boolean(p.isLiked)}
+          className="shrink-0 border border-gray-200 !bg-white"
+        />
       </div>
 
       <div>
