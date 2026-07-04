@@ -3,7 +3,7 @@ title: Property (объект недвижимости)
 type: entity
 tags: [property, listings, statuses]
 created: 2026-07-04
-updated: 2026-07-04
+updated: 2026-07-05
 sources: [packages/core/src/property.ts, apps/web/src/app/api/properties]
 ---
 
@@ -25,6 +25,8 @@ sources: [packages/core/src/property.ts, apps/web/src/app/api/properties]
 ## Публикация
 
 Создавать объекты может только landlord с `verification_status = approved` ([[verification]]), иначе `verification_required`.
+
+Самозанятым доступны только жилые типы (apartment/house/dacha) — `allowedPropertyTypesFor` в core, серверная проверка (`self_employed_residential_only`) и фильтр в форме. Обоснование — [[tax-logic]].
 
 ## См. также
 
