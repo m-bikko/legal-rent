@@ -6,7 +6,13 @@ import {
   type PropertyStatus,
 } from "@rentlegal/core";
 import { ApiError, handle, ok, parseBody, requireUser } from "@/server/api";
-import { mapAgreement, mapProperty, mapUser, supabaseAdmin } from "@/server/db";
+import {
+  mapAgreement,
+  mapInstallment,
+  mapProperty,
+  mapUser,
+  supabaseAdmin,
+} from "@/server/db";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -40,14 +46,18 @@ export const GET = handle(async (_req: Request, { params }: Ctx) => {
   const agreementRow = await activeAgreementFor(id);
   let agreement = null;
   if (agreementRow) {
-    const { data: tenant } = await supabaseAdmin
-      .from("users")
-      .select("*")
-      .eq("id", agreementRow.tenant_id)
-      .single();
+    const [{ data: tenant }, { data: insts }] = await Promise.all([
+      supabaseAdmin.from("users").select("*").eq("id", agreementRow.tenant_id).single(),
+      supabaseAdmin
+        .from("payment_installments")
+        .select("*")
+        .eq("agreement_id", agreementRow.id)
+        .order("seq", { ascending: true }),
+    ]);
     agreement = {
       ...mapAgreement(agreementRow),
       tenant: tenant ? mapUser(tenant) : null,
+      installments: (insts ?? []).map(mapInstallment),
     };
   }
 

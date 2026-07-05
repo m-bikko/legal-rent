@@ -76,6 +76,8 @@ export interface AgreementRow {
   status: string;
   landlordSignedAt: string | null;
   tenantSignedAt: string | null;
+  startDate: string | null;
+  unitsCount: number | null;
   createdAt: string;
 }
 
@@ -87,5 +89,31 @@ export const mapAgreement = (row: Record<string, unknown>): AgreementRow => ({
   status: row.status as string,
   landlordSignedAt: (row.landlord_signed_at as string | null) ?? null,
   tenantSignedAt: (row.tenant_signed_at as string | null) ?? null,
+  startDate: (row.start_date as string | null) ?? null,
+  unitsCount: (row.units_count as number | null) ?? null,
+  createdAt: row.created_at as string,
+});
+
+export interface InstallmentRow {
+  id: string;
+  agreementId: string;
+  seq: number;
+  periodStart: string;
+  periodEnd: string;
+  dueAt: string;
+  amount: number;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+export const mapInstallment = (row: Record<string, unknown>): InstallmentRow => ({
+  id: row.id as string,
+  agreementId: row.agreement_id as string,
+  seq: row.seq as number,
+  periodStart: row.period_start as string,
+  periodEnd: row.period_end as string,
+  dueAt: row.due_at as string,
+  amount: Number(row.amount),
+  paidAt: (row.paid_at as string | null) ?? null,
   createdAt: row.created_at as string,
 });

@@ -91,8 +91,15 @@ export const OrganizationVerificationData = z.object({
 export const CreateAgreementBody = z.object({
   propertyId: z.string().uuid(),
   tenantPhone: phone,
+  /** Дата начала оплаты — первый дедлайн графика (ISO). */
+  startDate: z.string().datetime(),
+  /** Сколько периодов аренды берёт арендатор (лимит по единице — MAX_UNITS). */
+  unitsCount: z.number().int().min(1).max(720),
 });
 export type CreateAgreementBody = z.infer<typeof CreateAgreementBody>;
+
+export const SetInstallmentPaidBody = z.object({ paid: z.boolean() });
+export type SetInstallmentPaidBody = z.infer<typeof SetInstallmentPaidBody>;
 
 export type ApiOk<T> = { ok: true; data: T };
 export type ApiErr = { ok: false; error: { code: string; message: string } };

@@ -1,8 +1,14 @@
-import { CreateAgreementBody, normalizeKzPhone } from "@rentlegal/core";
+import {
+  CreateAgreementBody,
+  MAX_UNITS,
+  addPeriod,
+  normalizeKzPhone,
+  type RentPeriod,
+} from "@rentlegal/core";
 import { ApiError, handle, ok, parseBody, requireUser } from "@/server/api";
-import { mapAgreement, mapProperty, supabaseAdmin } from "@/server/db";
+import { mapAgreement, mapInstallment, mapProperty, supabaseAdmin } from "@/server/db";
 
-/** Мои договоры (draft/active) — и как арендатора, и как арендодателя. */
+/** Мои договоры (draft/active) с графиком платежей — как арендатора и как арендодателя. */
 export const GET = handle(async () => {
   const user = await requireUser();
   const { data: rows, error } = await supabaseAdmin
@@ -13,9 +19,26 @@ export const GET = handle(async () => {
     .order("created_at", { ascending: false });
   if (error) throw new ApiError("unknown", 500);
 
+  const ids = (rows ?? []).map((r) => r.id);
+  const bySchedule = new Map<string, ReturnType<typeof mapInstallment>[]>();
+  if (ids.length > 0) {
+    const { data: insts } = await supabaseAdmin
+      .from("payment_installments")
+      .select("*")
+      .in("agreement_id", ids)
+      .order("seq", { ascending: true });
+    for (const inst of insts ?? []) {
+      const mapped = mapInstallment(inst);
+      const list = bySchedule.get(mapped.agreementId) ?? [];
+      list.push(mapped);
+      bySchedule.set(mapped.agreementId, list);
+    }
+  }
+
   const items = (rows ?? []).map((r) => ({
     ...mapAgreement(r),
     property: mapProperty(r.properties as unknown as Record<string, unknown>),
+    installments: bySchedule.get(r.id) ?? [],
   }));
   return ok({ items });
 });
@@ -45,17 +68,45 @@ export const POST = handle(async (req: Request) => {
   if (!tenant) throw new ApiError("tenant_not_found", 404);
   if (tenant.id === user.id) throw new ApiError("cannot_rent_own", 409);
 
+  const unit = property.rent_period as RentPeriod;
+  if (body.unitsCount > MAX_UNITS[unit]) throw new ApiError("validation_error");
+  const startDate = new Date(body.startDate);
+  if (Number.isNaN(startDate.getTime())) throw new ApiError("validation_error");
+
   const { data: row, error } = await supabaseAdmin
     .from("rental_agreements")
     .insert({
       property_id: property.id,
       landlord_id: user.id,
       tenant_id: tenant.id,
+      start_date: startDate.toISOString(),
+      units_count: body.unitsCount,
     })
     .select("*")
     .single();
   // unique-индекс one_active_agreement_per_property защищает от гонки
   if (error) throw new ApiError("agreement_exists", 409);
+
+  // График: платёж i покрывает [start+i, start+i+1), дедлайн — начало периода (предоплата)
+  const installments = Array.from({ length: body.unitsCount }, (_, i) => {
+    const periodStart = addPeriod(startDate, unit, i);
+    return {
+      agreement_id: row.id,
+      seq: i + 1,
+      period_start: periodStart.toISOString(),
+      period_end: addPeriod(startDate, unit, i + 1).toISOString(),
+      due_at: periodStart.toISOString(),
+      amount: property.price,
+    };
+  });
+  const { error: instError } = await supabaseAdmin
+    .from("payment_installments")
+    .insert(installments);
+  if (instError) {
+    // не оставляем договор без графика
+    await supabaseAdmin.from("rental_agreements").delete().eq("id", row.id);
+    throw new ApiError("unknown", 500);
+  }
 
   return ok({ item: mapAgreement(row) });
 });

@@ -182,6 +182,30 @@
     "attachedNotice": "Tenant attached, agreement created",
     "property": "Property"
   },
+  "schedule": {
+    "title": "Payment schedule",
+    "startDate": "Payment start date",
+    "startDateRequired": "Choose the payment start date",
+    "unitsLabel": {
+      "hour": "Rental hours",
+      "day": "Rental days",
+      "month": "Rental months"
+    },
+    "total": "Total for the whole term",
+    "installment": "Payment #{n}",
+    "dueBy": "Pay by",
+    "paidAt": "Paid",
+    "paidOf": "{paid} of {total} paid",
+    "markPaid": "Mark as paid",
+    "markUnpaid": "Remove mark",
+    "status": {
+      "paid": "Paid",
+      "upcoming": "Awaiting payment",
+      "warning25": "<25% of time left",
+      "critical10": "<10% of time left",
+      "overdue": "Overdue"
+    }
+  },
   "errors": {
     "validation_error": "Check that the fields are filled in correctly",
     "unauthorized": "Please log in",

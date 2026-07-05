@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import type { ListingsQuery } from "@rentlegal/core";
 import { apiGet, apiPost } from "./api-client";
-import type { AppUser, PropertyRow, AgreementRow } from "./types";
+import type { AppUser, PropertyRow, AgreementRow, InstallmentRow } from "./types";
 
 export const useMe = () =>
   useQuery({
@@ -76,7 +76,9 @@ export const useMyProperties = () =>
 
 export type OwnedProperty = {
   item: PropertyRow;
-  agreement: (AgreementRow & { tenant: AppUser | null }) | null;
+  agreement:
+    | (AgreementRow & { tenant: AppUser | null; installments: InstallmentRow[] })
+    | null;
 };
 
 export const useOwnedProperty = (id: string) =>
@@ -89,7 +91,7 @@ export const useMyAgreements = () =>
   useQuery({
     queryKey: ["my-agreements"],
     queryFn: () =>
-      apiGet<{ items: (AgreementRow & { property: PropertyRow })[] }>(
-        "/api/agreements",
-      ).then((d) => d.items),
+      apiGet<{
+        items: (AgreementRow & { property: PropertyRow; installments: InstallmentRow[] })[];
+      }>("/api/agreements").then((d) => d.items),
   });

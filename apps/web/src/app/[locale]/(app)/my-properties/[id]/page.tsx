@@ -5,6 +5,7 @@ import { Button, Card, Result, Skeleton, Typography, App } from "antd";
 import { Archive, ArchiveRestore, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
+import type { RentPeriod } from "@rentlegal/core";
 import { apiPatch, apiUpload } from "@/lib/api-client";
 import { useApiErrorMessage } from "@/lib/use-api-error";
 import { useOwnedProperty } from "@/lib/queries";
@@ -132,6 +133,8 @@ const OwnedPropertyPage = ({ params }: Props) => {
             <AgreementSection
               propertyId={p.id}
               propertyStatus={p.status}
+              rentPeriod={p.rentPeriod as RentPeriod}
+              price={p.price}
               agreement={agreement}
             />
           )}
