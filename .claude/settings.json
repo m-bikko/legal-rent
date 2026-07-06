@@ -19,7 +19,10 @@
       "NotebookEdit",
       "TodoRead",
       "TodoWrite",
-      "WebSearch"
+      "WebSearch",
+      "git",
+      "pnpm",
+      "npm"
     ],
     "additionalDirectories": [
       "/tmp",

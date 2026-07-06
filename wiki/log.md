@@ -1,5 +1,9 @@
 # Лог операций wiki
 
+## [2026-07-06] feat | Админ-панель + демо-данные
+
+Создана [[admin-panel]] (роль admin, дашборд, модерация верификаций), обновлён index. Seed: db/seed.mjs, креды — docs/demo-accounts.md.
+
 ## [2026-07-05] feat | График платежей договора
 
 Обновлена [[rental-agreement]]: installments, статусы по окну оплаты, права на отметку. Миграция 0002 (payment_installments), core: addPeriod/installmentStatus.
