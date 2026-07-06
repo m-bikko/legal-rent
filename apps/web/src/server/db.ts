@@ -28,7 +28,7 @@ export const supabaseAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
 export interface AppUser {
   id: string;
   phone: string;
-  role: UserRole;
+  role: UserRole | "admin";
   accountType: AccountType;
   fullName: string | null;
   orgName: string | null;

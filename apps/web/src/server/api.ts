@@ -52,6 +52,12 @@ export const parseBody = async <T>(schema: ZodSchema<T>, req: Request): Promise<
   return parsed.data;
 };
 
+export const requireAdmin = async (): Promise<AppUser> => {
+  const user = await requireUser();
+  if (user.role !== "admin") throw new ApiError("forbidden", 403);
+  return user;
+};
+
 export const requireUser = async (): Promise<AppUser> => {
   const session = await readSession();
   if (!session) throw new ApiError("unauthorized", 401);
