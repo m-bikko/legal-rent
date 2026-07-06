@@ -1,12 +1,29 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { UserRole, AccountType, VerificationStatus } from "@rentlegal/core";
 
-/** Server-only клиент с service-role: обходит RLS, никогда не попадает в браузер. */
-export const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false, autoRefreshToken: false } },
-);
+/**
+ * Server-only клиент с service-role: обходит RLS, никогда не попадает в браузер.
+ * Инициализация ленивая: при `next build` роуты импортируются на этапе
+ * «Collecting page data», когда env может отсутствовать — клиент создаётся
+ * только при первом реальном обращении.
+ */
+let adminClient: SupabaseClient | null = null;
+
+const getAdmin = (): SupabaseClient => {
+  adminClient ??= createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+  return adminClient;
+};
+
+export const supabaseAdmin: SupabaseClient = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const value = Reflect.get(getAdmin(), prop, getAdmin());
+    return typeof value === "function" ? value.bind(getAdmin()) : value;
+  },
+});
 
 export interface AppUser {
   id: string;
